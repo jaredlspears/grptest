@@ -1,20 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { list } from "@vercel/blob";
-import type { Discussion } from "@/lib/types";
+import { getDiscussion } from "@/lib/getDiscussion";
 import ShareBlock from "./ShareBlock";
-
-async function getDiscussion(id: string): Promise<Discussion | null> {
-  try {
-    const { blobs } = await list({ prefix: `discussions/${id}.json`, limit: 1 });
-    if (!blobs.length) return null;
-    const res = await fetch(blobs[0].url, { cache: "no-store" });
-    if (!res.ok) return null;
-    return res.json();
-  } catch {
-    return null;
-  }
-}
 
 export default async function DiscussionPage({
   params,

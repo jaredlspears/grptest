@@ -23,13 +23,14 @@ export async function POST(request: Request) {
       sections: body.sections,
     };
 
-    await put(`discussions/${id}.json`, JSON.stringify(discussion), {
+    const blob = await put(`discussions/${id}.json`, JSON.stringify(discussion), {
       access: "public",
       contentType: "application/json",
       addRandomSuffix: false,
     });
 
-    return NextResponse.json({ id }, { status: 201 });
+    console.log("Saved blob:", blob.url);
+    return NextResponse.json({ id, url: blob.url }, { status: 201 });
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     console.error("POST /api/discussions error:", msg);
