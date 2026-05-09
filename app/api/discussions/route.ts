@@ -26,6 +26,7 @@ export async function POST(request: Request) {
     await put(`discussions/${id}.json`, JSON.stringify(discussion), {
       access: "public",
       contentType: "application/json",
+      addRandomSuffix: false,
     });
 
     return NextResponse.json({ id }, { status: 201 });
