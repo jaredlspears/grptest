@@ -19,6 +19,11 @@ const fraunces = Fraunces({
 export const metadata: Metadata = {
   title: "GrpTest",
   description: "Quick discussion sharing for small groups",
+  viewport: {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 1,
+  },
 };
 
 export default function RootLayout({
