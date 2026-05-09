@@ -1,4 +1,4 @@
-import { head } from "@vercel/blob";
+import { list } from "@vercel/blob";
 import { NextResponse } from "next/server";
 import type { Discussion } from "@/lib/types";
 
@@ -13,16 +13,22 @@ export async function GET(
       return NextResponse.json({ error: "Invalid discussion ID" }, { status: 400 });
     }
 
-    const blobInfo = await head(`discussions/${id}.json`);
-    const res = await fetch(blobInfo.url, { cache: "no-store" });
-    if (!res.ok) throw new Error(`Blob fetch failed: ${res.status}`);
-    const discussion: Discussion = await res.json();
+    const { blobs } = await list({ prefix: `discussions/${id}.json`, limit: 1 });
 
+    if (!blobs.length) {
+      return NextResponse.json({ error: "Discussion not found" }, { status: 404 });
+    }
+
+    const res = await fetch(blobs[0].url, { cache: "no-store" });
+    if (!res.ok) {
+      return NextResponse.json({ error: "Discussion not found" }, { status: 404 });
+    }
+
+    const discussion: Discussion = await res.json();
     return NextResponse.json(discussion);
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     console.error("GET /api/discussions/[id] error:", msg);
-    // Treat any error as not found for participants
-    return NextResponse.json({ error: "Discussion not found" }, { status: 404 });
+    return NextResponse.json({ error: msg }, { status: 500 });
   }
 }
