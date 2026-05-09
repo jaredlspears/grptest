@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #FBF6EC;
+  --surface: #FFFCF5;
+  --card: #FFFFFF;
+  --ink: #2A3F5C;
+  --ink-soft: #5A6B82;
+  --ink-faint: #8A9AB0;
+  --line: #C9D5E4;
+  --accent: #2A3F5C;
+  --gold: #C9A856;
+}
+
+html,
+body {
+  background-color: var(--bg);
+  color: var(--ink);
+}
