@@ -1,15 +1,13 @@
 import { notFound } from "next/navigation";
+import { list } from "@vercel/blob";
 import type { Discussion } from "@/lib/types";
 import ParticipantView from "./ParticipantView";
 
 async function getDiscussion(id: string): Promise<Discussion | null> {
   try {
-    const baseUrl = process.env.VERCEL_URL
-      ? `https://${process.env.VERCEL_URL}`
-      : "http://localhost:3000";
-    const res = await fetch(`${baseUrl}/api/discussions/${id}`, {
-      cache: "no-store",
-    });
+    const { blobs } = await list({ prefix: `discussions/${id}.json`, limit: 1 });
+    if (!blobs.length) return null;
+    const res = await fetch(blobs[0].url, { cache: "no-store" });
     if (!res.ok) return null;
     return res.json();
   } catch {

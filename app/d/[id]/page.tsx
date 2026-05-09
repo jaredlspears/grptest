@@ -1,17 +1,14 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { list } from "@vercel/blob";
 import type { Discussion } from "@/lib/types";
 import ShareBlock from "./ShareBlock";
 
 async function getDiscussion(id: string): Promise<Discussion | null> {
   try {
-    const baseUrl =
-      process.env.VERCEL_URL
-        ? `https://${process.env.VERCEL_URL}`
-        : "http://localhost:3000";
-    const res = await fetch(`${baseUrl}/api/discussions/${id}`, {
-      cache: "no-store",
-    });
+    const { blobs } = await list({ prefix: `discussions/${id}.json`, limit: 1 });
+    if (!blobs.length) return null;
+    const res = await fetch(blobs[0].url, { cache: "no-store" });
     if (!res.ok) return null;
     return res.json();
   } catch {
@@ -32,7 +29,6 @@ export default async function DiscussionPage({
   return (
     <main className="min-h-screen bg-[var(--bg)] px-4 py-12">
       <div className="max-w-2xl mx-auto space-y-6">
-        {/* Back */}
         <Link
           href="/"
           className="inline-flex items-center gap-1 font-sans text-sm text-[var(--ink-soft)] hover:text-[var(--ink)] transition-colors"
@@ -40,7 +36,6 @@ export default async function DiscussionPage({
           ← Back
         </Link>
 
-        {/* Title */}
         <div className="space-y-1">
           <h1 className="font-serif font-semibold text-[var(--ink)] text-2xl leading-snug">
             {discussion.title}
@@ -52,10 +47,8 @@ export default async function DiscussionPage({
           )}
         </div>
 
-        {/* Share block */}
         <ShareBlock id={id} />
 
-        {/* Sections preview */}
         <div className="space-y-3">
           <p className="font-sans text-xs font-medium uppercase tracking-widest text-[var(--ink-faint)]">
             {discussion.sections.length}{" "}
